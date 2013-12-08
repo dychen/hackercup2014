@@ -2,6 +2,7 @@ from collections import deque
 
 FILENAME = 'aaaaaa_example_input.txt'
 FILENAME = 'aaaaaa1.txt'
+#FILENAME = 'aaaaaatest.txt'
 OUTPUT = 'aaaaaa_output.txt'
 
 def longest_path(mat):
@@ -10,60 +11,67 @@ def longest_path(mat):
     mat2 = [row[:] for row in mat]
     mat3 = [row[:] for row in mat]
     mat[0][0] = 1
-    q = deque([(0, 0, -1, 0)])
+    q = deque([(0, 0, -1)])
+    q2 = deque()
+    q3 = deque()
     # Down/right
     num_iter = 0
     while len(q) > 0:
         # prevdir (previous block was in what direction) - 0: up, 1: left, 2: down, 3: right
-        # state - 0: first down/right iteration, 1: up/left, 2: second down/right iteration
-        r, c, prevdir, state = q.popleft()
-        if state == 0:
-            # Move down
-            if r+1 < rows and mat[r+1][c] >= 0:
-                if (mat[r][c] + 1 > mat[r+1][c]):
-                    mat[r+1][c] = mat[r][c] + 1
-                    q.append((r+1, c, 0, 0))
-            # Move right
-            if c+1 < cols and mat[r][c+1] >= 0:
-                if (mat[r][c] + 1 > mat[r][c+1]):
-                    mat[r][c+1] = mat[r][c] + 1
-                    q.append((r, c+1, 1, 0))
-            # Move up -> State transition
-            if r-1 >= 0 and mat[r-1][c] >= 0 and prevdir != 0:
+        r, c, prevdir = q.popleft()
+        # Move down
+        if r+1 < rows and mat[r+1][c] >= 0:
+            if (mat[r][c] + 1 > mat[r+1][c]):
+                mat[r+1][c] = mat[r][c] + 1
+                q.append((r+1, c, 0))
+        # Move right
+        if c+1 < cols and mat[r][c+1] >= 0:
+            if (mat[r][c] + 1 > mat[r][c+1]):
+                mat[r][c+1] = mat[r][c] + 1
+                q.append((r, c+1, 1))
+        # Move up -> State transition
+        if r-1 >= 0 and mat[r-1][c] >= 0 and prevdir != 0:
+            # If it hits a wall or an edge:
+            if r+1 == rows or mat[r+1][c] < 0:
                 mat2[r-1][c] = max(mat[r-1][c], mat[r][c] + 1)
-                q.append((r-1, c, 2, 1))
-            # Move left -> State transition
-            if c-1 >= 0 and mat[r][c-1] >= 0 and prevdir != 1:
+                q2.append((r-1, c, 2))
+        # Move left -> State transition
+        if c-1 >= 0 and mat[r][c-1] >= 0 and prevdir != 1:
+            if c+1 == cols or mat[r][c+1] < 0:
                 mat2[r][c-1] = max(mat[r][c-1], mat[r][c] + 1)
-                q.append((r, c-1, 3, 1))
-        elif state == 1:
-            # Move up
-            if r-1 >= 0 and mat2[r-1][c] >= 0 and prevdir == 2:
-                mat2[r-1][c] = max(mat2[r-1][c], mat2[r][c] + 1)
-                q.append((r-1, c, 2, 1))
-            # Move left
-            if c-1 >= 0 and mat2[r][c-1] >= 0 and prevdir == 3:
-                mat2[r][c-1] = max(mat2[r][c-1], mat2[r][c] + 1)
-                q.append((r, c-1, 3, 1))
-            # Move down -> State transition
-            if r+1 < rows and mat2[r+1][c] >= 0 and prevdir != 2:
-                mat3[r+1][c] = max(mat2[r+1][c], mat2[r][c] + 1)
-                q.append((r+1, c, 0, 2))
-            # Move right -> State transition
-            if c+1 < cols and mat2[r][c+1] >= 0 and prevdir != 3:
-                mat3[r][c+1] = max(mat2[r][c+1], mat2[r][c] + 1)
-                q.append((r, c+1, 1, 2))
-        elif state == 2:
-            # Move down
-            if r+1 < rows and mat3[r+1][c] >= 0 and prevdir != 2:
-                if (mat3[r][c] + 1 > mat3[r+1][c]):
-                    mat3[r+1][c] = max(mat3[r+1][c], mat3[r][c] + 1)
-                    q.append((r+1, c, 0, 2))
-            # Move right
-            if c+1 < cols and mat3[r][c+1] >= 0 and prevdir != 3:
-                if (mat3[r][c] + 1 > mat3[r][c+1]):
-                    mat3[r][c+1] = max(mat3[r][c+1], mat3[r][c] + 1)
-                    q.append((r, c+1, 1, 2))
+                q2.append((r, c-1, 3))
+        num_iter += 1
+    while len(q2) > 0:
+        r, c, prevdir = q2.popleft()
+        # Move up
+        if r-1 >= 0 and mat2[r-1][c] >= 0 and prevdir == 2:
+            mat2[r-1][c] = max(mat2[r-1][c], mat2[r][c] + 1)
+            q2.append((r-1, c, 2))
+        # Move left
+        if c-1 >= 0 and mat2[r][c-1] >= 0 and prevdir == 3:
+            mat2[r][c-1] = max(mat2[r][c-1], mat2[r][c] + 1)
+            q2.append((r, c-1, 3))
+        # Move down -> State transition
+        if r+1 < rows and mat2[r+1][c] >= 0 and prevdir != 2:
+            mat3[r+1][c] = max(mat2[r+1][c], mat2[r][c] + 1)
+            q3.append((r+1, c, 0))
+        # Move right -> State transition
+        if c+1 < cols and mat2[r][c+1] >= 0 and prevdir != 3:
+            mat3[r][c+1] = max(mat2[r][c+1], mat2[r][c] + 1)
+            q3.append((r, c+1, 1))
+        num_iter += 1
+    while len(q3) > 0:
+        r, c, prevdir = q3.popleft()
+        # Move down
+        if r+1 < rows and mat3[r+1][c] >= 0 and prevdir != 2:
+            if (mat3[r][c] + 1 > mat3[r+1][c]):
+                mat3[r+1][c] = max(mat3[r+1][c], mat3[r][c] + 1)
+                q3.append((r+1, c, 0))
+        # Move right
+        if c+1 < cols and mat3[r][c+1] >= 0 and prevdir != 3:
+            if (mat3[r][c] + 1 > mat3[r][c+1]):
+                mat3[r][c+1] = max(mat3[r][c+1], mat3[r][c] + 1)
+                q3.append((r, c+1, 1))
         num_iter += 1
     print "NUM ITER: " + str(num_iter)
     max_len = -1
