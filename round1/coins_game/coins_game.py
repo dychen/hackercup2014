@@ -1,21 +1,17 @@
-import sys
-
 FILENAME = 'coins_game_example_input.txt'
-FILENAME = 'coins_game1.txt'
 OUTPUT = 'coins_games_output.txt'
 
-# Will need to recurse at most 1000000 (max number of jars) times
-sys.setrecursionlimit(1000000)
-
 def calculate(num_jars, num_coins, target):
-    if num_jars == 1:
-        return target
-    # Calculate minimal number of moves on an even distribution
-    min_moves = max((((target-1) / num_jars + 1) * num_jars) - (num_coins - target), target)
-    # Recursively calculate actual minimal number of moves on:
-    # Even distribution vs minimal number of moves on N-1 jars
-    min_moves = min(min_moves, calculate(num_jars-1, num_coins, target) + 1)
-    return min_moves
+    record = [0] * N
+    # Build the array that contains the minimum number of moves for each number of jars
+    # from 1 to N. Note that the array indices are offset by 1 from the number of jars.
+    record[0] = target
+    for i in range(1, len(record)):
+        # Calculate minimal number of moves on an even distribution
+        even_dist = max((((target-1) / (i+1) + 1) * (i+1)) - (num_coins - target), target)
+        # Even distribution vs at least one empty jar
+        record[i] = min(even_dist, record[i-1]+1)
+    return record[-1]
 
 if __name__ == '__main__':
     f = open(FILENAME)
