@@ -1,4 +1,5 @@
-FILENAME = 'labelmaker_example_input.txt'
+#FILENAME = 'labelmaker_example_input.txt'
+FILENAME = 'labelmaker.txt'
 OUTPUT = 'labelmaker_output.txt'
 
 def calc_label(alphabet, target, L):
@@ -25,8 +26,8 @@ if __name__ == '__main__':
         line = f.readline().split()
         alphabet = list(line[0])
         target = int(line[1])
-        label = calc_label(alphabet, target, 25)
-        print "Case #" + str(i+1) + ": " + label
-        #f_out.write("Case #" + str(i+1) + ": " + label + '\n')
+        label = calc_label(alphabet, target, 50)
+        #print "Case #" + str(i+1) + ": " + label
+        f_out.write("Case #" + str(i+1) + ": " + label + '\n')
     f.close()
     f_out.close()

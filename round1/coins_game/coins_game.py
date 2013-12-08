@@ -1,5 +1,6 @@
-FILENAME = 'coins_game_example_input.txt'
-OUTPUT = 'coins_games_output.txt'
+#FILENAME = 'coins_game_example_input.txt'
+FILENAME = 'coins_game.txt'
+OUTPUT = 'coins_game_output.txt'
 
 def calculate(num_jars, num_coins, target):
     record = [0] * N
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     for i in range(NUM_INPUT):
         N, K, C = map(lambda x: int(x), f.readline().split())
         P = calculate(N, K, C)
-        print "Case #" + str(i+1) + ": " + str(P)
-        #f_out.write("Case #" + str(i+1) + ": " + str(P) + '\n')
+        #print "Case #" + str(i+1) + ": " + str(P)
+        f_out.write("Case #" + str(i+1) + ": " + str(P) + '\n')
     f.close()
     f_out.close()
